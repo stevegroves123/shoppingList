@@ -12,34 +12,34 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     //MARK: - Outlets
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var plusButton: UIButton!
+    @IBOutlet weak var addButton: UIButton!
     
     //MARK: - Variables / Arrays
     public var foodItem: [String] = [] //holds the list of the food items
-    public var shoppingList: [(String, String, String)] = [
-        ("Cupboard","Baked Beans","Y"),
-        ("Freezer","Pork Sausages","Y"),
-        ("Fridge","Mushrooms","Y"),
-        ("Bathroom","Toilet paper","Y"),
-        ("Bakery","Bagels","Y"),
-        ("Freezer","Oven Chips","Y"),
-        ("Bakery","Sliced Bread","Y"),
-        ("Bathroom","Shampoo","Y"),
-        ("Bathroom","Conditioner","Y"),
-        ("Cupboard","Tea","Y"),
-        ("Fridge","Milk","Y"),
-        ("Fridge","Eggs","Y"),
-        ("Fridge","Butter","Y"),
-        ("Cupboard","Taco's","Y"),
-        ("Bakery","Soft Rolls","Y"),
-        ("Bathroom","Soap","Y"),
-        ("Bathroom","Shower gel","Y"),
-        ("Household","Kitchen cleaner, spray","Y"),
-        ("Household","Kitchen bleach","Y"),
-        ("Household","Paracetamol","Y")]
+    public var shoppingList: [(String, String, String, String)] = [
+        ("Cupboard","Baked Beans","Y","4 tins"),
+        ("Freezer","Pork Sausages","Y","6 pk"),
+        ("Fridge","Mushrooms","Y","1 pk"),
+        ("Bathroom","Toilet paper","Y","12 rolls"),
+        ("Bathroom","Tooth paste","Y","1 tube"),
+        ("Bakery","Bagels","Y","4 pk"),
+        ("Freezer","Oven Chips","Y","1.5kg"),
+        ("Bakery","Sliced Bread","Y","1 loaf"),
+        ("Cupboard","Tea","Y","240 bags"),
+        ("Fridge","Milk","Y","6 pints"),
+        ("Fridge","Eggs","Y","1/2 doz"),
+        ("Fridge","Butter","Y","250g"),
+        ("Cupboard","Taco's","Y","1 pk"),
+        ("Bakery","Soft Rolls","Y","4 rolls"),
+        ("Bathroom","Hand soap","Y","Bar"),
+        ("Fridge","Cheese","Y","500g"),
+        ("Fridge","Ham","Y","1 pk"),
+        ("Bathroom","Shower gel","Y","250g"),
+        ("Household","Paracetamol","Y","1 pk of 16")]
     
     //MARK: - Actions
-    @IBAction func plusButtonAction(_ sender: UIButton) {
+    
+    @IBAction func addButtonAction(_ sender: UIButton) {
         let alert = UIAlertController(title: "Add item", message: nil, preferredStyle: .alert)
         alert.addTextField { (foodItemCell) in
             foodItemCell.placeholder = "enter Food Item"
@@ -47,9 +47,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let action = UIAlertAction(title: "Add to list", style: .destructive) { (_) in
             guard let addedFoodItem = alert.textFields?.last?.text else { return }
             print(addedFoodItem)
-            self.shoppingList.append(("Added",addedFoodItem,"Y"))
-            self.foodItem = []          //Clear out existitng array
-            self.updateShoppingList()   //ReSort shopping list and reCreate foodItem array
+            self.shoppingList.append(("Added",addedFoodItem,"Y","1 off"))
+            self.updateShoppingList()   //ReSort shopping list
             self.tableView.reloadData() //Display all data including the new
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (action:UIAlertAction!) in
@@ -78,24 +77,32 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return foodItem.count
+        return shoppingList.count
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let titleString = "Items needed from Tesco"
-        return titleString.uppercased()
+        return titleString.capitalized
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "foodItemCell", for: indexPath)
-        cell.textLabel?.text = foodItem[indexPath.row]
+        cell.textLabel?.text = shoppingList[indexPath.row].1
+        cell.detailTextLabel?.text = shoppingList[indexPath.row].3
         switch shoppingList[indexPath.row].2 {
         case "Y":
             cell.textLabel?.font = UIFont.systemFont(ofSize: 18)
             cell.textLabel?.textColor = UIColor.black
+            cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 18)
+            cell.detailTextLabel?.textColor = UIColor.black
+            cell.accessoryType = .none
         case "N":
             cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
             cell.textLabel?.textColor = UIColor.lightGray
+            cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 14)
+            cell.detailTextLabel?.textColor = UIColor.lightGray
+            cell.accessoryType = .checkmark
+            
         default:
             cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
             cell.textLabel?.textColor = UIColor.gray
@@ -120,10 +127,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     //MARK: - update the shopping list
     func updateShoppingList() {
         shoppingList.sort{ $1.1 > $0.1 }
-        
-        for j in 0...shoppingList.count - 1 {
-            foodItem.append(shoppingList[j].1)
-        }
     }
 
 }
